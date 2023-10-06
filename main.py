@@ -12,7 +12,7 @@ while(True):
     resp1 = chatglm.response(user_input)
     resp2 = ernie_bot.response(user_input)
     resp3 = llma_2.response(user_input)
-    
+        
     print("ROBOT1 >>>："+resp1)
     print("ROBOT2 >>>："+resp2)
     print("ROBOT3 >>>："+resp3)
@@ -20,4 +20,4 @@ while(True):
     chatglm.add_message(resp1,"assistant")
     ernie_bot.add_message(resp2,"assistant")
     llma_2.add_message(resp3,"assistant")
-    
+     
