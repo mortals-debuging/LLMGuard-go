@@ -1,3 +1,7 @@
 *.json
 *.go
 go.mod
+__pycache__/
+*.py[cod]
+*.pyc
+.idea/
