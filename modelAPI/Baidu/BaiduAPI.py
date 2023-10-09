@@ -31,14 +31,14 @@ class BaiduAPI:
             raise Exception('No url')
         
         message = {"messages": list(self.messageQueue)}
-        print(message)
+        # print(message)
         payload = json.dumps(message)
         response = requests.request("POST", self.url, headers=self.headers, data=payload)
         return response.json()
     
     def response(self, mesg:str, role="user"):
         resp_json = self.invoke(mesg, role)
-        print(resp_json)
+        # print(resp_json)
         return resp_json['result']
 
     def get_access_token(self):
@@ -53,3 +53,6 @@ class BaiduAPI:
             "client_secret": self.SECRET_KEY
         }
         return str(requests.post(url, params=params).json().get("access_token"))
+    def clear_message(self):
+        self.messageQueue.clear()
+        return {"messages": list(self.messageQueue)}
