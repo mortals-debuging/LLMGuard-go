@@ -5,18 +5,17 @@ import re
 
 class OptimizePrompt:
     def __init__(self):
-            
-        self.user_input = "长沙有几所985大学呢,我希望你能详细介绍一下？"
+        
         self.label = ["生活常识","志愿填报","学校信息","其他"]
 
-        self.prompt = "你现在的任务是优化问题prompt。你首先在（"+str(self.label)+"）中选择分类。格式为：分类结果： 优化结果：。这个Prompt是：\"" + self.user_input +"\""
-        jieba.load_userdict("votePart/PromptText/specialword.txt")
+        self.prompt = "你现在的任务是优化问题prompt。你首先在（"+str(self.label)+"）中选择分类。格式为：分类结果： 优化结果：。这个Prompt是：\""
+        jieba.load_userdict("optimize/PromptText/specialword.txt")
     
     def extract_keywords(self, text,n=3):
 
         #jieba已经加载了词典
         keywords = jieba.analyse.extract_tags(text, topK=n)
-        print("/".join(keywords))
+        # print("/".join(keywords))
         return keywords
 
     
@@ -28,8 +27,9 @@ class OptimizePrompt:
         return words_with_pos
 
     def optimize_prompt(self, user_input=None, label=None):
+
         if user_input is None:
-            user_input = self.user_input
+            raise Exception("user_input is None")
         if label is None:
             label = self.label
 
@@ -38,10 +38,11 @@ class OptimizePrompt:
 
         # 提取实体
         entities = self.extract_keywords_with_pos(user_input,keywords)
-        print(entities)
+        # print(entities)
         
         # 生成优化后的prompt
-        prompt = "你现在的任务是优化问题prompt。你首先在（"+str(label)+"）中选择分类。格式为：分类结果： 优化结果：。这个Prompt是：\"" + user_input +"\""
+        prompt = self.prompt + user_input +"\""
+
         for entity in entities:
             entity = entity[0]
             prompt = prompt.replace(entity, "["+entity+"]")

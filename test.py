@@ -1,5 +1,5 @@
-from optimize.prompt import OptimizePrompt
+from optimize.optimize import Optimize
 
-p = OptimizePrompt()
-a = p.optimize_prompt()
+p = Optimize()
+a = p.vote_responses()
 print(a)
