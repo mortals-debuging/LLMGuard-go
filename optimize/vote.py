@@ -69,3 +69,4 @@ class Vote:
         max_indices = torch.where(row_sums == torch.max(row_sums))
         # print("最大值的坐标为：", max_indices[0].item())
         return max_indices[0].item()
+    
