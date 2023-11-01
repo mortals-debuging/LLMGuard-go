@@ -61,6 +61,7 @@ func QuestionListen(w http.ResponseWriter, r *http.Request) {
 	}
 	models := []Model{
 		Baidu.NewErnieBot(),
+		Baidu.NewErnieBot4(),
 		Baidu.NewChatGLM(),
 		Baidu.NewLlma2(),
 		OpenAI.NewOpenAI(),
