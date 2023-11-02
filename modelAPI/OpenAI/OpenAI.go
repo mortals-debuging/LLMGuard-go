@@ -35,7 +35,7 @@ func NewOpenAI() *OpenAI {
 		temperature:   0.7,
 		maxLenMessage: 50,
 		messageQueue:  make([]map[string]string, 0, 50),
-		proxy:         ServerReachable(),
+		proxy:         !ServerReachable(), //true means use proxy,while Server is unreachable
 		proxyURL:      "127.0.0.1:7890",
 	}
 }
@@ -71,23 +71,20 @@ func (o *OpenAI) Invoke(mesg string, role string) (json.RawMessage, error) {
 	}
 	req.Header = o.headers
 
-	var transport *http.Transport
-
+	var client *http.Client
 	if o.proxy {
 		proxy, err := url.Parse(o.proxyURL)
 		if err != nil {
 			return nil, errors.New("Error parsing proxy URL: ")
 		}
-
-		transport = &http.Transport{
+		transport := &http.Transport{
 			Proxy: http.ProxyURL(proxy),
 		}
+		client = &http.Client{
+			Transport: transport,
+		}
 	} else {
-		transport = &http.Transport{}
-	}
-
-	client := &http.Client{
-		Transport: transport,
+		client = &http.Client{}
 	}
 	resp, err := client.Do(req)
 	if err != nil {
@@ -123,7 +120,7 @@ func (o *OpenAI) ServerDetect() bool {
 	return o.proxy
 }
 func ServerReachable() bool {
-	openAIURL := "https://api.openai.com/"
+	openAIURL := "https://openai.com"
 	resp, err := http.Get(openAIURL)
 	if err != nil {
 		log.Println("OpenAI Server is Unreachable")
