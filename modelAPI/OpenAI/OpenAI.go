@@ -7,6 +7,7 @@ import (
 	"io/ioutil"
 	"llmguard/modelAPI/OpenAI/Token"
 	"net/http"
+	"net/url"
 	"strings"
 )
 
@@ -18,6 +19,8 @@ type OpenAI struct {
 	maxLenMessage int
 	messageQueue  []map[string]string
 	headers       http.Header
+	proxy         bool
+	proxyURL      string
 }
 
 func NewOpenAI() *OpenAI {
@@ -31,6 +34,8 @@ func NewOpenAI() *OpenAI {
 		temperature:   0.7,
 		maxLenMessage: 50,
 		messageQueue:  make([]map[string]string, 0, 50),
+		proxy:         ServerReachable(),
+		proxyURL:      "127.0.0.1:7890",
 	}
 }
 func (o *OpenAI) AddMessage(mesg string, role string) string {
@@ -51,6 +56,7 @@ func (o *OpenAI) AddMessage(mesg string, role string) string {
 	return string(jsonMessage)
 }
 func (o *OpenAI) Invoke(mesg string, role string) (json.RawMessage, error) {
+
 	message := o.AddMessage(mesg, role)
 	if len(o.messageQueue) == 0 {
 		return nil, errors.New("No message")
@@ -63,7 +69,25 @@ func (o *OpenAI) Invoke(mesg string, role string) (json.RawMessage, error) {
 		return nil, err
 	}
 	req.Header = o.headers
-	client := &http.Client{}
+
+	var transport *http.Transport
+
+	if o.proxy {
+		proxy, err := url.Parse(o.proxyURL)
+		if err != nil {
+			return nil, errors.New("Error parsing proxy URL: ")
+		}
+
+		transport = &http.Transport{
+			Proxy: http.ProxyURL(proxy),
+		}
+	} else {
+		transport = &http.Transport{}
+	}
+
+	client := &http.Client{
+		Transport: transport,
+	}
 	resp, err := client.Do(req)
 	if err != nil {
 		return nil, err
@@ -76,7 +100,6 @@ func (o *OpenAI) Invoke(mesg string, role string) (json.RawMessage, error) {
 	}
 	return bodyBytes, nil
 }
-
 func (o *OpenAI) Response(mesg string, role string) (string, error) {
 	jsonStr, err := o.Invoke(mesg, role)
 	if err != nil {
@@ -93,4 +116,22 @@ func (o *OpenAI) Response(mesg string, role string) (string, error) {
 	content := message["content"].(string)
 
 	return string(content), nil
+}
+func (o *OpenAI) ServerDetect() bool {
+	o.proxy = ServerReachable()
+	return o.proxy
+}
+func ServerReachable() bool {
+	openAIURL := "https://api.openai.com/"
+	resp, err := http.Get(openAIURL)
+	if err != nil {
+		fmt.Println("OpenAI Server is Unreachable")
+		return false
+	}
+	defer resp.Body.Close()
+
+	if resp.StatusCode == 200 {
+		return true
+	}
+	return false
 }
