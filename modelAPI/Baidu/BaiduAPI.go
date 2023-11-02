@@ -89,7 +89,9 @@ func (b *Baidu) Response(mesg string, role string) (string, error) {
 	if err != nil {
 		return "", errors.New("result not found or is not a string")
 	}
-
+	if resp["error_code"] != nil {
+		return "", errors.New(resp["error_msg"].(string))
+	}
 	result := resp["result"].(string)
 	return string(result), nil
 }

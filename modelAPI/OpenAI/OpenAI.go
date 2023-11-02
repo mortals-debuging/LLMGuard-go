@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"io/ioutil"
 	"llmguard/modelAPI/OpenAI/Token"
+	"log"
 	"net/http"
 	"net/url"
 	"strings"
@@ -125,7 +126,7 @@ func ServerReachable() bool {
 	openAIURL := "https://api.openai.com/"
 	resp, err := http.Get(openAIURL)
 	if err != nil {
-		fmt.Println("OpenAI Server is Unreachable")
+		log.Println("OpenAI Server is Unreachable")
 		return false
 	}
 	defer resp.Body.Close()
@@ -133,5 +134,6 @@ func ServerReachable() bool {
 	if resp.StatusCode == 200 {
 		return true
 	}
+	log.Println("OpenAI Server is Unreachable, will use proxy")
 	return false
 }

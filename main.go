@@ -21,7 +21,7 @@ func main() {
 }
 
 func handleRequest(question string, models []Model) []string {
-	log.Println("--------------------handleRequest---------------------")
+	log.Println("--------------------handleRequest start---------------------")
 	timeout := 30 * time.Second
 
 	var wg sync.WaitGroup
@@ -50,7 +50,7 @@ func handleRequest(question string, models []Model) []string {
 	for _, result := range results {
 		log.Println(result)
 	}
-	log.Println("--------------------handleRequest---------------------")
+	log.Println("--------------------handleRequest Finished---------------------")
 	return results
 }
 func QuestionListen(w http.ResponseWriter, r *http.Request) {
