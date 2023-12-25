@@ -25,7 +25,7 @@ type OpenAI struct {
 }
 
 func NewOpenAI() *OpenAI {
-	token := Token.GetTokens().GetKeys()
+	token := Token.GetKeys()
 	return &OpenAI{
 		ApiKey: token.ApiKey,
 		url:    "https://api.openai.com/v1/chat/completions",

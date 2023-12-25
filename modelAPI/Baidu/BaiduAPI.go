@@ -23,7 +23,7 @@ type Baidu struct {
 }
 
 func NewBaidu() *Baidu {
-	token := Token.GetTokens().GetKeys()
+	token := Token.GetKeys()
 	return &Baidu{
 		ApiKey:        token.ApiKey,
 		SecretKey:     token.SecretKey,

@@ -18,7 +18,7 @@ type Tokens struct {
 	sync.Mutex
 }
 
-var instance *Tokens
+var tokens *Tokens
 var once sync.Once
 
 func init() {
@@ -27,9 +27,9 @@ func init() {
 func UpdateTokens() {
 	once.Do(func() {
 
-		instance = &Tokens{}
-		instance.configs = []Token{}
-		instance.index = 0
+		tokens = &Tokens{}
+		tokens.configs = []Token{}
+		tokens.index = 0
 
 		files, err := os.ReadDir("./modelAPI/OpenAI/Token")
 		if err != nil {
@@ -55,15 +55,12 @@ func UpdateTokens() {
 				os.Exit(1)
 			}
 			f.Close() // Close the file immediately after reading
-			instance.configs = append(instance.configs, config)
+			tokens.configs = append(tokens.configs, config)
 		}
 	})
 }
-func GetTokens() *Tokens {
-	return instance
-}
-
-func (t *Tokens) GetKeys() Token {
+func GetKeys() Token {
+	t := tokens
 	t.Lock()
 	defer t.Unlock()
 	if len(t.configs) == 0 {
